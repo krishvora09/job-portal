@@ -12,8 +12,8 @@ function App() {
    <Navbar/>
    <Routes>
    <Route path='/' element={<AllPosts/>}/>
-   {/* <Route path="/create" element={<Create />} />
-   <Route path="/edit" element={<Edit />} /> */}
+   <Route path="/create" element={<Create />} />
+   <Route path="/edit" element={<Edit />} />
    </Routes>
   </>
   );

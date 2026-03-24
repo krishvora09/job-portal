@@ -6,142 +6,194 @@ import {
   Button,
   Paper,
   Box,
+  Chip,
+  Autocomplete
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-const initial = { postId:"",postProfile: "", reqExperience: 0, postTechStack: [], postDesc:"" };
 
+const initial = {
+  postId: "",
+  postProfile: "",
+  reqExperience: 0,
+  postTechStack: [],
+  postDesc: ""
+};
+
+const skillOptions = [
+  "Java",
+  "Spring Boot",
+  "React",
+  "Node.js",
+  "Python",
+  "Django",
+  "JavaScript",
+  "SQL",
+  "MongoDB",
+  "Docker"
+];
 
 const Create = () => {
-  const skillSet = [
-    {
-      name: "Javascript"
-    },
-    {
-      name: "Java"
-    },
-    {
-      name: "Python"
-    },
-    {
-      name: "Django"
-    },
-    {
-      name: "Rust"
-    }
-  ];
-
   const navigate = useNavigate();
   const [form, setForm] = useState(initial);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:8080/jobPost",form)
-      .then((resp) => {
-        console.log(resp.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+
+    axios.post("http://localhost:8080/jobPost", form)
+      .then(() => navigate("/"))
+      .catch((error) => console.log(error));
   };
 
-  const { postId, postProfile, reqExperience, postDesc } = form;
-
-  const handleChange = (e) => {
-    setForm({...form , postTechStack : [...form.postTechStack, e.target.value]});
-  }
-
-  
-
   return (
-    <Paper sx={{ padding:"1%"}} elevation={0}>
-      <Typography sx={{ margin: "3% auto" }} align="center" variant="h5">
-        Create New Post
-      </Typography>
-      <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <Box
+    <div style={{ background: "#0f172a", minHeight: "100vh", padding: "40px" }}>
+
+      <Paper
+        sx={{
+          maxWidth: "650px",
+          margin: "auto",
+          padding: "30px",
+          borderRadius: "16px",
+          background: "#f8fafc", // ✅ LIGHT FORM
+          boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
+        }}
+      >
+
+        {/* Title */}
+        <Typography
+          align="center"
           sx={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
+            fontFamily: '"Pacifico", cursive',
+            fontSize: "24px",
+            color: "#1e3a8a",
+            mb: 3
           }}
         >
-           <TextField
-            min="0"
-            type="number"
-            sx={{ width: "50%", margin: "2% auto" }}
-            
-            onChange={(e) => setForm({ ...form, postId: e.target.value })}
-            label="Enter your Post ID"
-            variant="outlined"
-            value={postId}
-          />
+          Create Job Post
+        </Typography>
+
+        <form onSubmit={handleSubmit}>
+
+          {/* Post ID */}
           <TextField
-            type="string"
-            sx={{ width: "50%", margin: "2% auto" }}
-            required
-            onChange={(e) => setForm({ ...form, postProfile: e.target.value })}
-            label="Job-Profile"
-            variant="outlined"
-            value={postProfile}
-          />
-          <TextField
-            min="0"
+            fullWidth
+            label="Post ID"
             type="number"
-            sx={{ width: "50%", margin: "2% auto" }}
-            required
-            onChange={(e) => setForm({ ...form, reqExperience: e.target.value })}
-            label="Years of Experience"
-            variant="outlined"
-            value={reqExperience}
+            value={form.postId}
+            onChange={(e) =>
+              setForm({ ...form, postId: e.target.value })
+            }
+            sx={{ mb: 2 }}
           />
-           <TextField
-            type="string"
-            sx={{ width: "50%", margin: "2% auto" }}
-            required
+
+          {/* Profile */}
+          <TextField
+            fullWidth
+            label="Job Profile"
+            value={form.postProfile}
+            onChange={(e) =>
+              setForm({ ...form, postProfile: e.target.value })
+            }
+            sx={{ mb: 2 }}
+          />
+
+          {/* Experience */}
+          <TextField
+            fullWidth
+            type="number"
+            label="Experience (Years)"
+            value={form.reqExperience}
+            onChange={(e) =>
+              setForm({ ...form, reqExperience: e.target.value })
+            }
+            sx={{ mb: 2 }}
+          />
+
+          {/* Description */}
+          <TextField
+            fullWidth
             multiline
-            rows={4}
-            onChange={(e) => setForm({ ...form, postDesc: e.target.value })}
-            label="Job-desc"
-            variant="outlined"
-            value={postDesc}
+            rows={3}
+            label="Job Description"
+            value={form.postDesc}
+            onChange={(e) =>
+              setForm({ ...form, postDesc: e.target.value })
+            }
+            sx={{
+              mb: 3,
+              "& .MuiInputBase-root": {
+                fontFamily: '"Manrope", sans-serif' // ✅ FONT FIX
+              }
+            }}
           />
-          <Box sx={{ margin:"1% auto"}}>
-          <h3>Please mention required skills</h3>
-         <ul>
-        {skillSet.map(({ name }, index) => {
-          return (
-            <li key={index}>
-              <div >
-                <div>
-                  <input
-                    type="checkbox"
-                    id={`custom-checkbox-${index}`}
-                    name={name}
-                    value={name}
-                    onChange={handleChange}  
-                  />
-                  <label htmlFor={`custom-checkbox-${index}`}>{name}</label>
-                </div>
-              </div>
-            </li>
-          );
-        })}
-       
-      </ul>
-          </Box>
+
+          {/* Skills (Autocomplete with suggestions) */}
+          <Typography
+            sx={{
+              mb: 1,
+              fontFamily: '"Manrope", sans-serif',
+              fontWeight: 600
+            }}
+          >
+            Skills
+          </Typography>
+
+          <Autocomplete
+            multiple
+            freeSolo // ✅ allow custom input
+            options={skillOptions}
+            value={form.postTechStack}
+            onChange={(event, newValue) =>
+              setForm({ ...form, postTechStack: newValue })
+            }
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={index}
+                  label={option}
+                  sx={{
+                    background: "#6366f1",
+                    color: "#fff"
+                  }}
+                />
+              ))
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Select or type skills"
+                sx={{
+                  "& .MuiInputBase-root": {
+                    fontFamily: '"Manrope", sans-serif'
+                  }
+                }}
+              />
+            )}
+            sx={{ mb: 3 }}
+          />
+
+          {/* Submit */}
           <Button
-            sx={{ width: "50%", margin: "2% auto" }}
+            fullWidth
             variant="contained"
             type="submit"
-            onClick={()=>navigate("/")}
+            sx={{
+              background: "#22c55e",
+              fontWeight: 600,
+              fontFamily: '"Manrope", sans-serif',
+              "&:hover": {
+                background: "#16a34a"
+              }
+            }}
           >
             Submit
           </Button>
-        </Box>
-      </form>
-    </Paper>
-  );
-}
 
-export default Create
+        </form>
+
+      </Paper>
+    </div>
+  );
+};
+
+export default Create;

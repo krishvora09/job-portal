@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//@Controller
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class JobRestController {
@@ -16,7 +15,6 @@ public class JobRestController {
     private JobService service;
 
     @GetMapping("jobPosts")
-//    @ResponseBody
     public List<JobPost> getAllJobs() {
         return service.getAllJobs();
     }
@@ -24,6 +22,11 @@ public class JobRestController {
     @GetMapping("jobPost/{postId}")
     public JobPost getJob(@PathVariable("postId") int postId) {
         return service.getJob(postId);
+    }
+
+    @GetMapping("jobPosts/keyword/{keyword}")
+    public List<JobPost> searchByKeyword(@PathVariable("keyword") String keyword) {
+        return service.search(keyword);
     }
 
     @PostMapping("jobPost")
@@ -42,5 +45,12 @@ public class JobRestController {
     public String deleteJob(@PathVariable int postId) {
         service.deleteJob(postId);
         return "Deleted";
+    }
+
+    @GetMapping("load")
+    public String loadData() {
+
+        service.load();
+        return "success";
     }
 }
