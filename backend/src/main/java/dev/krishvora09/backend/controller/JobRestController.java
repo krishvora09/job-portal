@@ -1,4 +1,4 @@
-package dev.krishvora09.backend;
+package dev.krishvora09.backend.controller;
 
 import dev.krishvora09.backend.model.JobPost;
 import dev.krishvora09.backend.service.JobService;
